@@ -5,7 +5,7 @@ import Transcript from "@/components/Transcript";
 const PAGE_SIZE_DEFAULT = 20;
 
 async function getBusinessId() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
   const { data: profile } = await supabase
@@ -28,7 +28,7 @@ export default async function CallsPage({ searchParams }: { searchParams: Promis
   const outcome = sp.outcome;
   const q = sp.q?.trim();
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   let query = supabase
     .from("calls")
     .select("id,timestamp,caller_number,duration,outcome,audio_url,transcript,tags", { count: "exact" })

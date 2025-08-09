@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { VolumeChart, OutcomePie } from "@/components/Charts";
 
 async function getBusinessId() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
   const { data: profile } = await supabase
@@ -22,7 +22,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     redirect("/login");
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
 
   const range = (sp.range === "30d" ? 30 : 7);
   const fromDate = startOfDay(subDays(new Date(), range - 1));

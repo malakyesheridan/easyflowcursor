@@ -5,7 +5,7 @@ type MissedCall = { id: string; timestamp: string; caller_number: string | null;
 type FeedbackRow = { id: string; call_id: string; rating: number | null; notes: string | null };
 
 async function getContext() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { user: null, businessId: null };
   const { data: profile } = await supabase
@@ -18,7 +18,7 @@ async function getContext() {
 
 async function saveFeedback(formData: FormData) {
   "use server";
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const callId = formData.get("call_id") as string;
   const rating = Number(formData.get("rating"));
   const notes = (formData.get("notes") as string) || null;
@@ -31,7 +31,7 @@ export default async function NotificationsPage() {
   const { user, businessId } = await getContext();
   if (!user || !businessId) redirect("/login");
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: missed } = await supabase
     .from("calls")
     .select("id,timestamp,caller_number,tags")
