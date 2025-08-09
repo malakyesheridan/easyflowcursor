@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMiddlewareClient } from '@supabase/ssr'
 
-const ALLOW = ['/auth/callback', '/login', '/favicon.ico', '/robots.txt']
+const ALLOW = ['/auth/callback', '/login', '/favicon.ico', '/robots.txt', '/debug/session']
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
