@@ -1,11 +1,11 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Transcript from "@/components/Transcript";
 
 const PAGE_SIZE_DEFAULT = 20;
 
 async function getBusinessId() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
   const { data: profile } = await supabase
@@ -28,7 +28,7 @@ export default async function CallsPage({ searchParams }: { searchParams: Promis
   const outcome = sp.outcome;
   const q = sp.q?.trim();
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServer();
   let query = supabase
     .from("calls")
     .select("id,timestamp,caller_number,duration,outcome,audio_url,transcript,tags", { count: "exact" })

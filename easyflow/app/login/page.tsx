@@ -1,17 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
+import { createSupabaseBrowser } from '@/lib/supabase/client'
 import { getSiteUrl } from '@/lib/env'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = createSupabaseBrowser()
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()

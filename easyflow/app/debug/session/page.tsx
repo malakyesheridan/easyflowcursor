@@ -1,37 +1,11 @@
-import { cookies as nextCookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { createSupabaseServer } from '@/lib/supabase/server'
 
 export default async function DebugSession() {
-  const cookieStore = await (nextCookies as unknown as () => Promise<any>)()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll: () => cookieStore.getAll(),
-        setAll: (list) => {
-          for (const { name, value, options } of list) {
-            cookieStore.set(name, value, options)
-          }
-        },
-      },
-    }
-  )
-
+  const supabase = await createSupabaseServer()
   const { data: { session }, error } = await supabase.auth.getSession()
-
   return (
-    <pre style={{ padding: 16 }}>
-      {JSON.stringify(
-        {
-          hasSession: !!session,
-          userId: session?.user?.id,
-          email: session?.user?.email,
-          error: error ?? null,
-        },
-        null,
-        2
-      )}
+    <pre style={{padding:16}}>
+      {JSON.stringify({ hasSession: !!session, user: session?.user, error: error ?? null }, null, 2)}
     </pre>
   )
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { createSupabaseBrowser } from "@/lib/supabase/client";
 import { useState } from "react";
 
 export default function NavBar() {
@@ -13,7 +13,7 @@ export default function NavBar() {
   const onLogout = async () => {
     setLoading(true);
     try {
-      const supabase = createSupabaseBrowserClient();
+      const supabase = createSupabaseBrowser();
       await supabase.auth.signOut();
       router.replace("/login");
     } finally {

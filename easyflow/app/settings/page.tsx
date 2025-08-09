@@ -1,8 +1,8 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 async function getContext() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { user: null, businessId: null };
   const { data: profile } = await supabase
@@ -14,7 +14,7 @@ async function getContext() {
 }
 
 async function getAuthenticatedBusinessId() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
   const { data: profile } = await supabase
@@ -27,7 +27,7 @@ async function getAuthenticatedBusinessId() {
 
 async function updateBusinessSettings(formData: FormData) {
   "use server";
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServer();
   const businessId = await getAuthenticatedBusinessId();
   if (!businessId) return;
 
@@ -57,7 +57,7 @@ async function updateBusinessSettings(formData: FormData) {
 
 async function upsertFaq(formData: FormData) {
   "use server";
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServer();
   const businessId = await getAuthenticatedBusinessId();
   if (!businessId) return;
 
@@ -82,7 +82,7 @@ export default async function SettingsPage() {
   const { user, businessId } = await getContext();
   if (!user || !businessId) redirect("/login");
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServer();
   const { data: biz } = await supabase
     .from("businesses")
     .select("name,settings")
