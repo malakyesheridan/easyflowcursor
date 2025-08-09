@@ -1,20 +1,30 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies as nextCookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
+import { getSiteUrl } from '@/lib/env';
 
 export async function GET(request: Request) {
-  const cookieStore = await (nextCookies as unknown as () => Promise<any>)();
+  const url = new URL(request.url);
+  const cookieStore = await (cookies as unknown as () => Promise<any>)();
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cookieList) => cookieList.forEach(({ name, value, options }) => cookieStore.set(name, value, options as any)),
+        setAll: (cookiesToSet) => {
+          for (const { name, value, options } of cookiesToSet) {
+            cookieStore.set(name, value, { ...options, secure: true } as any);
+          }
+        },
       },
     }
   );
 
-  await supabase.auth.exchangeCodeForSession(request.url);
-  return redirect("/dashboard");
+  const { error } = await supabase.auth.exchangeCodeForSession(url.toString());
+  // console.error('exchangeCodeForSession error', error);
+
+  const dest = `${getSiteUrl()}/dashboard`;
+  return NextResponse.redirect(dest);
 }

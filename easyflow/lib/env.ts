@@ -1,3 +1,4 @@
-export function getSiteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+export function getSiteUrl() {
+  const url = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, '');
+  return url || 'http://localhost:3000';
 }
