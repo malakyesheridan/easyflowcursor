@@ -1,7 +1,8 @@
+import { NextResponse } from 'next/server'
 import { cookies as nextCookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 
-export default async function DebugSession() {
+export async function GET() {
   const cookieStore = await (nextCookies as unknown as () => Promise<any>)()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,21 +18,12 @@ export default async function DebugSession() {
       },
     }
   )
-
   const { data: { session }, error } = await supabase.auth.getSession()
-
-  return (
-    <pre style={{ padding: 16 }}>
-      {JSON.stringify(
-        {
-          hasSession: !!session,
-          userId: session?.user?.id,
-          email: session?.user?.email,
-          error: error ?? null,
-        },
-        null,
-        2
-      )}
-    </pre>
-  )
+  return NextResponse.json({
+    route: '/api/debug/session',
+    hasSession: !!session,
+    userId: session?.user?.id ?? null,
+    email: session?.user?.email ?? null,
+    error: error ?? null,
+  })
 }

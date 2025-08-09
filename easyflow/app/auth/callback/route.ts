@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { cookies as nextCookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 
 function isProd() {
@@ -17,13 +17,14 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const dest = `${siteUrlFrom(request.url)}/dashboard`
   const response = NextResponse.redirect(dest)
+  const cookieStore = await (nextCookies as unknown as () => Promise<any>)()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll: () => cookies().getAll(),
+        getAll: () => cookieStore.getAll(),
         setAll: (cookieList) => {
           for (const { name, value, options } of cookieList) {
             response.cookies.set({
